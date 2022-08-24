@@ -1,6 +1,7 @@
 package de.playground.services;
 
 import de.playground.dtos.User;
+import org.springframework.context.annotation.Bean;
 
 public interface IUserService {
     void createUser(User user);
