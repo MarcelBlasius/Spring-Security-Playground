@@ -2,10 +2,11 @@ package de.playground.database;
 
 import de.playground.dtos.User;
 import lombok.AllArgsConstructor;
+
 import java.util.Map;
 
 @AllArgsConstructor
-public class UserInMemoryRepository implements UserRepository{
+public class UserInMemoryRepository implements IUserRepository {
     private Map<String, User> users;
 
     @Override
