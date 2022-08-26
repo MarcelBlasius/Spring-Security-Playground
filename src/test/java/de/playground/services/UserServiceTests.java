@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -13,11 +14,13 @@ import static org.mockito.Mockito.verify;
 public class UserServiceTests {
     private IUserRepository repo;
     private UserService service;
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
         this.repo = Mockito.mock(IUserRepository.class);
-        this.service = new UserService(repo);
+        this.passwordEncoder = Mockito.mock(PasswordEncoder.class);
+        this.service = new UserService(repo, passwordEncoder);
     }
 
     @Test

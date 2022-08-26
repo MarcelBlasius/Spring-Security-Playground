@@ -1,10 +1,10 @@
 package de.playground.dtos;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
 @AllArgsConstructor
-@Getter
+@Data
 public class User {
     private String username;
     private String password;
