@@ -23,6 +23,7 @@ public class AccessControllerTests {
     @BeforeEach
     void setUp() {
         this.userService = Mockito.mock(IUserService.class);
+        this.accessUtils = Mockito.mock(IAccessUtils.class);
         this.controller = new AccessController(userService, accessUtils);
     }
 
