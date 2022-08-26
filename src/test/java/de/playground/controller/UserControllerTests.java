@@ -31,6 +31,7 @@ public class UserControllerTests {
     void updateUserTest() {
         // arrange
         var user = new User("username", "123");
+        Mockito.when(accessService.authorizeUser(Mockito.any())).thenReturn(true);
 
         // act
         var response = this.controller.updateUser(user);
@@ -42,6 +43,9 @@ public class UserControllerTests {
     @Test
     @DisplayName("update user returns 400 if user is null")
     void updateNullUserTest() {
+        // arrange
+        Mockito.when(accessService.authorizeUser("hugo")).thenReturn(true);
+
         // act
         var response = this.controller.updateUser(null);
 
@@ -85,6 +89,9 @@ public class UserControllerTests {
     @Test
     @DisplayName("delete user works")
     void deleteUserTest() {
+        // arrange
+        Mockito.when(accessService.authorizeUser("hugo")).thenReturn(true);
+
         // act
         var response = this.controller.deleteUser("hugo");
 
@@ -111,6 +118,7 @@ public class UserControllerTests {
         // arrange
         var user = new User("hugo", "123");
         Mockito.when(this.userService.readUser(user.getUsername())).thenReturn(user);
+        Mockito.when(accessService.authorizeUser("hugo")).thenReturn(true);
 
         // act
         var response = this.controller.deleteUser(user.getUsername());
@@ -134,9 +142,10 @@ public class UserControllerTests {
 
     @Test
     @DisplayName("read user with unknown username returns 404")
-    void readUserNotFoundReturns401() {
+    void readUserNotFoundReturns404() {
         // arrange
         Mockito.when(this.userService.readUser(Mockito.any())).thenReturn(null);
+        Mockito.when(accessService.authorizeUser(Mockito.any())).thenReturn(true);
 
         // act
         var response = this.controller.readUser("unknown");
