@@ -1,8 +1,8 @@
 package de.playground.controller;
 
 import de.playground.dtos.User;
-import de.playground.security.AccessController;
 import de.playground.security.IAccessUtils;
+import de.playground.security.ITokenService;
 import de.playground.services.IUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,13 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class AccessControllerTests {
     private IUserService userService;
     private IAccessUtils accessUtils;
+    private ITokenService tokenService;
     private AccessController controller;
 
     @BeforeEach
     void setUp() {
         this.userService = Mockito.mock(IUserService.class);
         this.accessUtils = Mockito.mock(IAccessUtils.class);
-        this.controller = new AccessController(userService, accessUtils);
+        this.controller = new AccessController(userService, accessUtils, tokenService);
     }
 
     @Test

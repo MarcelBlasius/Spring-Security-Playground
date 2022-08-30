@@ -21,10 +21,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final IAccessUtils accessUtils;
+    private final ITokenService tokenService;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, IAccessUtils accessUtils) {
+    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, IAccessUtils accessUtils, ITokenService tokenService) {
         this.authenticationManager = authenticationManager;
         this.accessUtils = accessUtils;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -39,8 +41,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         var user = (User) authResult.getPrincipal();
-        var accessToken = accessUtils.createAccessToken(user.getUsername(), request.getRequestURL().toString());
-        var refreshToken = accessUtils.createRefreshTokenToken(user.getUsername(), request.getRequestURL().toString());
+        var accessToken = tokenService.createAccessToken(user.getUsername(), request.getRequestURL().toString());
+        var refreshToken = tokenService.createRefreshTokenToken(user.getUsername(), request.getRequestURL().toString());
 
         var tokens = new HashMap<String, String>();
         tokens.put("access_token", accessToken);

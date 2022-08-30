@@ -41,6 +41,20 @@ public class UserControllerTests {
     }
 
     @Test
+    @DisplayName("Update user returns 403 when not authorized")
+    void updateUser403Test() {
+        // arrange
+        var user = new User("username", "123");
+        Mockito.when(accessService.authorizeUser(Mockito.any())).thenReturn(false);
+
+        // act
+        var response = this.controller.updateUser(user);
+
+        // assert
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
+
+    @Test
     @DisplayName("update user returns 400 if user is null")
     void updateNullUserTest() {
         // arrange
@@ -99,6 +113,19 @@ public class UserControllerTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
+    @Test
+    @DisplayName("delete user not authorized returns 403")
+    void deleteUser403Test() {
+        // arrange
+        Mockito.when(accessService.authorizeUser("hugo")).thenReturn(false);
+
+        // act
+        var response = this.controller.deleteUser("hugo");
+
+        // assert
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"", "   "})
     @EmptySource
@@ -114,14 +141,14 @@ public class UserControllerTests {
 
     @Test
     @DisplayName("read user works")
-    void getUserTest() {
+    void readUserTest() {
         // arrange
         var user = new User("hugo", "123");
         Mockito.when(this.userService.readUser(user.getUsername())).thenReturn(user);
         Mockito.when(accessService.authorizeUser("hugo")).thenReturn(true);
 
         // act
-        var response = this.controller.deleteUser(user.getUsername());
+        var response = this.controller.readUser(user.getUsername());
 
         // assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -152,5 +179,19 @@ public class UserControllerTests {
 
         // assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("read user returns 403 when not authorized")
+    void readUserNotAuthorized() {
+        // arrange
+        Mockito.when(this.userService.readUser(Mockito.any())).thenReturn(new User("unknown", "123"));
+        Mockito.when(accessService.authorizeUser(Mockito.any())).thenReturn(false);
+
+        // act
+        var response = this.controller.readUser("unknown");
+
+        // assert
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
 }

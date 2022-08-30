@@ -1,8 +1,10 @@
-package de.playground.security;
+package de.playground.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.playground.dtos.User;
+import de.playground.security.IAccessUtils;
+import de.playground.security.ITokenService;
 import de.playground.services.IUserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class AccessController {
     private final IUserService userService;
     private final IAccessUtils accessUtils;
+    private final ITokenService tokenService;
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody User user) {
@@ -46,13 +49,13 @@ public class AccessController {
 
         try {
             var refreshToken = authorizationHeader.substring("Bearer ".length());
-            var username = accessUtils.decodeUsername(refreshToken);
+            var username = tokenService.decodeUsername(refreshToken);
             var user = userService.readUser(username);
             if (user == null) {
                 throw new UsernameNotFoundException("User not found");
             }
 
-            var accessToken = accessUtils.createAccessToken(username, request.getRequestURL().toString());
+            var accessToken = tokenService.createAccessToken(username, request.getRequestURL().toString());
 
             var tokens = new HashMap<String, String>();
             tokens.put("access_token", accessToken);

@@ -19,6 +19,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @AllArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private final IAccessUtils accessUtils;
+    private final ITokenService tokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -35,7 +36,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         try {
             var token = authorizationHeader.substring("Bearer ".length());
-            var username = accessUtils.decodeUsername(token);
+            var username = tokenService.decodeUsername(token);
 
             var authenticationToken = new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);

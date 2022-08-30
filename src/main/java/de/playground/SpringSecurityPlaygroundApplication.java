@@ -20,8 +20,4 @@ public class SpringSecurityPlaygroundApplication {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    CommandLineRunner run(UserService userService) {
-        return args -> userService.createUser(new User("marcel", "123456"));
-    }
 }

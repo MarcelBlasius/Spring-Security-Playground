@@ -1,7 +1,5 @@
 package de.playground.security;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.playground.services.IUserService;
 import lombok.AllArgsConstructor;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
@@ -27,6 +24,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class AccessUtils implements IAccessUtils, UserDetailsService {
     private IUserService userService;
 
+    @Override
     public boolean authorizeUser(String username) {
         return SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals(username);
     }
@@ -43,14 +41,6 @@ public class AccessUtils implements IAccessUtils, UserDetailsService {
     }
 
     @Override
-    public String decodeUsername(String token) {
-        var algorithm = Algorithm.HMAC256("secret".getBytes());
-        var verifier = JWT.require(algorithm).build();
-        var decodedJWT = verifier.verify(token);
-        return decodedJWT.getSubject();
-    }
-
-    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userService.readUser(username);
         if (user == null) {
@@ -58,29 +48,5 @@ public class AccessUtils implements IAccessUtils, UserDetailsService {
         }
 
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
-    }
-
-    public String createAccessToken(String username, String requestUrl) {
-        var hashingAlgorithm = GetHashingAlgorithm();
-        return JWT.create()
-                .withSubject(username)
-                .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
-                .withIssuer(requestUrl)
-                .sign(hashingAlgorithm);
-    }
-
-    @Override
-    public String createRefreshTokenToken(String username, String requestUrl) {
-        var hashingAlgorithm = GetHashingAlgorithm();
-        return JWT.create()
-                .withSubject(username)
-                .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
-                .withIssuer(requestUrl)
-                .sign(hashingAlgorithm);
-    }
-
-
-    private static Algorithm GetHashingAlgorithm() {
-        return Algorithm.HMAC256("secret".getBytes());
     }
 }
